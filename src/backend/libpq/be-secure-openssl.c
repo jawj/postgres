@@ -846,8 +846,18 @@ static int
 my_sock_read(BIO *h, char *buf, int size)
 {
 	int			res = 0;
+	
+	int buffered = pq_buffered_data_length();
+	int returnable = buffered > size ? size : buffered;
+	if (buf != NULL && returnable > 0)
+	{
+		ereport(LOG, errmsg("read TLS handshake from buffer: %i bytes", returnable));  // use a DEBUG level instead?
+		pq_getbytes(buf, returnable);
+		BIO_clear_retry_flags(h);  // is this necessary/correct?
+		res = returnable;
+	}
 
-	if (buf != NULL)
+	else if (buf != NULL)
 	{
 		res = secure_raw_read(((Port *) BIO_get_data(h)), buf, size);
 		BIO_clear_retry_flags(h);
