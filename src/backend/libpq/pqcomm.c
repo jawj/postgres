@@ -1129,6 +1129,17 @@ pq_buffer_has_data(void)
 	return (PqRecvPointer < PqRecvLength);
 }
 
+/* --------------------------------
+ *		pq_buffered_data_length - how much buffered data is available to read?
+ *
+ * This will *not* attempt to read more data.
+ * --------------------------------
+ */
+int
+pq_buffered_data_length(void) {
+	return PqRecvLength - PqRecvPointer;
+}
+
 
 /* --------------------------------
  *		pq_startmsgread - begin reading a message from the client.
