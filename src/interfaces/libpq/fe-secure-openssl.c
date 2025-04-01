@@ -841,7 +841,7 @@ initialize_SSL(PGconn *conn)
 		 * environment variables.
 		 */
 #if defined(WIN32) && OPENSSL_VERSION_PREREQ(3, 2)
-		if (SSL_CTX_load_verify_store(SSL_context, "org.openssl.winstore://") != 1)
+		if (SSL_CTX_load_verify_store(SSL_context, "org.openssl.winstore:") != 1)
 #else
 		if (SSL_CTX_set_default_verify_paths(SSL_context) != 1)
 #endif
