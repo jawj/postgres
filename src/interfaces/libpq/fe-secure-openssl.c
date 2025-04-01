@@ -840,7 +840,11 @@ initialize_SSL(PGconn *conn)
 		 * further overridden by the SSL_CERT_DIR and SSL_CERT_FILE
 		 * environment variables.
 		 */
+#ifdef WIN32
+		if (SSL_CTX_load_verify_store(SSL_context, "org.openssl.winstore://") != 1)
+#else
 		if (SSL_CTX_set_default_verify_paths(SSL_context) != 1)
+#endif
 		{
 			char	   *err = SSLerrmessage(ERR_get_error());
 
