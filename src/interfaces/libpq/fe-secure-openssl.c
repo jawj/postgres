@@ -839,12 +839,20 @@ initialize_SSL(PGconn *conn)
 		 * differ by platform. Note that the default system locations may be
 		 * further overridden by the SSL_CERT_DIR and SSL_CERT_FILE
 		 * environment variables.
+		 * 
+		 * On Windows, we use the system store 
+		 * (https://docs.openssl.org/master/man7/OSSL_STORE-winstore/) as long
+		 * as neither of these environment variables is set.
 		 */
+		
+		int rootcert_result = 
 #if defined(WIN32) && OPENSSL_VERSION_PREREQ(3, 2)
-		if (SSL_CTX_load_verify_store(SSL_context, "org.openssl.winstore:") != 1)
-#else
-		if (SSL_CTX_set_default_verify_paths(SSL_context) != 1)
+			getenv("SSL_CERT_DIR") == NULL && getenv("SSL_CERT_FILE") == NULL ?
+			SSL_CTX_load_verify_store(SSL_context, "org.openssl.winstore:") :
 #endif
+			SSL_CTX_set_default_verify_paths(SSL_context);
+			
+		if (rootcert_result != 1)
 		{
 			char	   *err = SSLerrmessage(ERR_get_error());
 
