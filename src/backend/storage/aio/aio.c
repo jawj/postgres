@@ -24,6 +24,8 @@
  *
  * - read_stream.c - helper for reading buffered relation data
  *
+ * - README.md - higher-level overview over AIO
+ *
  *
  * Portions Copyright (c) 1996-2025, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
@@ -505,7 +507,7 @@ pgaio_io_process_completion(PgAioHandle *ioh, int result)
 
 	pgaio_io_update_state(ioh, PGAIO_HS_COMPLETED_IO);
 
-	pgaio_io_call_inj(ioh, "AIO_PROCESS_COMPLETION_BEFORE_SHARED");
+	pgaio_io_call_inj(ioh, "aio-process-completion-before-shared");
 
 	pgaio_io_call_complete_shared(ioh);
 

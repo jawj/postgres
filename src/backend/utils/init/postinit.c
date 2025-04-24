@@ -667,6 +667,13 @@ BaseInit(void)
 	 * drop ephemeral slots, which in turn triggers stats reporting.
 	 */
 	ReplicationSlotInitialize();
+
+	/*
+	 * The before shmem exit callback frees the DSA memory occupied by the
+	 * latest memory context statistics that could be published by this proc
+	 * if requested.
+	 */
+	before_shmem_exit(AtProcExit_memstats_cleanup, 0);
 }
 
 
@@ -753,7 +760,7 @@ InitPostgres(const char *in_dbname, Oid dboid,
 	 */
 	SharedInvalBackendInit(false);
 
-	ProcSignalInit(MyCancelKeyValid, MyCancelKey);
+	ProcSignalInit(MyCancelKey, MyCancelKeyLength);
 
 	/*
 	 * Also set up timeout handlers needed for backend operation.  We need
